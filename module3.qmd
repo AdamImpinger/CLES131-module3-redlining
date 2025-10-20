@@ -17,6 +17,7 @@ library(tidyverse)
 ### Use of GitHub
 
 Link to your forked GH repository:
+git@github.com:AdamImpinger/CLES131-module3-redlining.git
 
 ### Use of Quarto
 
@@ -34,6 +35,7 @@ We will use a vector dataset of redlining maps from [Mapping Inequality](https:/
 
 Click 'Explore the Maps' to look at some cities and neighborhoods you are familiar with. Who is the intended audience of this data science project, and how are the data used to communicate understanding, insight, and knowledge? Why is this effective?
 
+This data science project is aimed at the general public as a project of history. By presenting each neighborhood as they were classified by loan rating, we are able to understand factors that hindered development in cities and condemned zones as risky financial investments, limiting opportunities for families in those zones attempting to build generational wealth and equity in these zones and individuals attempting to bring commerce or housing developments into these zones. This representation provides explanation for enduring economic challenge in these redlined zones, and details the sentiment towards people groups. By including the primary source of descriptions and limits applied to each zone, the biases and aribitrary decision that economic potential was capped in these zones on the basis of race relates the governements direct action to limit economic growth and services availed to people within minortized groups.
 ### Q2 (1 point)
 
 Create a `data/` folder in the root of your project and create five subfolders labeled with the city names from Fig. 2 of Schell et al. 2020. Because the spatial files will be large, add `data/` to the .gitignore file. 
@@ -43,6 +45,10 @@ Then, go back to the home page of [Mapping Inequality](https://dsl.richmond.edu/
 Import the geojson file into your R environment with the `st_read`()` function from sf. Check the structure of this object and see that it is a special type of data frame, allowing it to be manipulated with many of the functions you already know, including ggplot. 
 
 Make a quick plot of your first city showing the "grade" in color using ggplot syntax and `geom_sf()`. Select a color scheme that better comports with redlining. 
+```{r}
+
+```
+
 
 ## The raster data
 
