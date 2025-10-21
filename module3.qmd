@@ -46,7 +46,25 @@ Import the geojson file into your R environment with the `st_read`()` function f
 
 Make a quick plot of your first city showing the "grade" in color using ggplot syntax and `geom_sf()`. Select a color scheme that better comports with redlining. 
 ```{r}
+data.path.balt <- "data/Baltimore/balt.geojson.json"
+balt.sf <- st_read(data.path.balt)
+balt.sf.firstclean <- balt.sf |>
+  mutate(grade = case_when(
+         grade %in% c("A", "A ") ~ "A",
+         grade %in% c("C", "C ") ~ "C",
+         TRUE ~ grade))
+#we use this for my lab, thought it would be helpful here
 
+#data aes
+#install.packages("RColorBrewer")
+library(RColorBrewer)
+# plot1 <- 
+  ggplot(balt.sf)+
+geom_sf(aes(color=grade)) +
+#was intially fill, would cover ndvi data
+  scale_color_brewer(palette="Set1",
+                     direction = -1)
+  
 ```
 
 
@@ -72,6 +90,10 @@ For each city, locate the 10m resolution files for the B04 and B08 bands along w
 ### Q3 (1 point)
 Use the terra package and the `rast()` function to import the two bands, which are reported as digital numbers. 
 Combine to calculate NDVI ($ (NIR - R) / (NIR + R)$) and display a quick plot of your first city. 
+```{r}
+rast()
+```
+
 
 ### Bonus 1 (1 point)
 Since you have 5 cities to plot, can you optimize the same operations as Q3 with a for loop? 
