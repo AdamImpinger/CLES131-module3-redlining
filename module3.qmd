@@ -94,8 +94,8 @@ Combine to calculate NDVI ($ (NIR - R) / (NIR + R)$) and display a quick plot of
 vis4balt <- rast("data/Baltimore/T18SUJ_20250603T155001_B04_10m copy.jp2")
 nir8balt <- rast("data/Baltimore/T18SUJ_20250603T155001_B08_10m copy.jp2")
 
-ndvi <- (nir8balt - vis4balt)/(nir8balt-vis4balt)
-ndvi
+ndvi4balt <- (nir8balt - vis4balt)/(nir8balt+vis4balt)
+
 
 ```
 
@@ -103,7 +103,53 @@ ndvi
 ### Bonus 1 (1 point)
 Since you have 5 cities to plot, can you optimize the same operations as Q3 with a for loop? 
 ```{r}
-list.files(path = "data/Birmingham/", pattern = "data/Birmingham/T16SEC_20190831T162839_B04_10m.jp2")
+# . indicates the use of the current set working directory, pattern establishes the file form while recursive command causes cycling through all sub files
+library(tidyverse)
+path.to.data <- "data/"
+jp2.files <- list.files(path = path.to.data, pattern = "\\.jp2$", recursive = TRUE, full.names=TRUE)
+jp2.df <- as.data.frame(jp2.files)
+jp2.clean <- jp2.files[str_ends(jp2.files, "_10m.jp2")]
+
+  ndvi.calc <- list()
+  vis.r <- list()
+  nir.r <- list()
+  
+for (i in seq_along(jp2.clean)) {
+  current_file <- jp2.clean[i]
+  if (str_ends(current_file, pattern = "B04_10m.jp2")) {
+ red.band <- rast(current_file)
+    red.name <- current_file
+  }
+ if (str_ends(current_file, "B08_10m.jp2"))
+ {
+nir.band <- rast(current_file)
+    nir.name <- current_file
+ }
+  if (!is.null(red.band) && !is.null(nir.band)) {
+    # Align rasters (ensure same extent/resolution)
+    nir.band <- resample(nir.band, red.band)
+    
+    # Compute NDVI
+    ndvi <- (nir.band - red.band) / (nir.band + red.band)
+    
+    names(ndvi) <- paste0("NDVI_meta"))
+    ndvi$source_files <- paste(basename(red.name), basename(nir.name), sep = " + ")
+  
+    ndvi.calc[[length(ndvi.calc) + 1]] <- ndvi
+    red.band <- nir.band <- NULL
+    red.name <- nir.name <- NULL
+  }
+  
+
+  
+  
+  
+  
+  
+  
+  
+
+
 ```
 
 ### Q4 (1 point)
