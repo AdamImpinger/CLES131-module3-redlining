@@ -125,6 +125,7 @@ library(tidyverse)
 path.to.data <- "data/"
 jp2.files <- list.files(path = path.to.data, pattern = "\\.jp2$", recursive = TRUE, full.names=TRUE)
 jp2.df <- as.data.frame(jp2.files)
+
 jp2.clean <- jp2.files[str_ends(jp2.files, "_10m.jp2")]
 
   ndvi.calc <- list()
@@ -160,15 +161,39 @@ nir.band <- rast(current_file)
   }}
   plot(ndvi.calc[[1]])
   names(ndvi.calc[[1]])
-  
+  # I sturggled so much with this first loop i will just be doing it manually from this point on for plotting, I am coward
   names(ndvi.calc[[1]]) <- "Birmingham"
+  
+  
   ndvi4birm <- ndvi.calc[[1]]
-  ndvi4
+  ndvi4indy <- ndvi.calc[[2]]
+  ndvi4minn <- ndvi.calc[[3]]
+  ndvi4phoe <- ndvi.calc[[4]]
+  ndvi4birmplot <- terra::project(x=ndvi4birm,"EPSG:4326")
+  ndvi4indyplot <- terra::project(x=ndvi4indy,"EPSG:4326")
+  ndvi4minnplot <- terra::project(x=ndvi4minn,"EPSG:4326")
+  ndvi4phoeplot <- terra::project(x=ndvi4phoe,"EPSG:4326")
   
   
-  
-  
-  
+  json.files <- list.files(path = path.to.data, pattern = "\\.json$", recursive = TRUE, full.names=TRUE)
+json.df <- as.data.frame(json.files)
+
+#lost missions, left for historical reccord of effort
+as.vector(json.read)
+plot.json<- as.data.frame(json.read)
+for (i in seq_along(json.files)){
+  current_file <- json.files[i]
+  file_name <- st_read(current_file)
+  plot.json <- cbind(file_name)
+  file_name <- NULL
+}
+
+birm.sf<- st_read("data/Birmingham/birm.geojson.json")
+indy.sf <- st_read("data/Indianapolis/indy.geojson.json")
+minn.sf <- st_read("data/Minneapolis/minn.geojson.json")
+phoe.sf <- st_read("data/Phoenix/pho.geojson.json")
+
+
   
   
   
@@ -178,12 +203,101 @@ nir.band <- rast(current_file)
 
 ### Q4 (1 point)
 Do the rasters and polygons share the same coordinate reference system? If not, project both into the same CRS and justify your choice. 
+No these were not in compatible, and resulted in skewed projections that were not aligned, as the crs had a variety of different crs used throughout the different latitudes, as the sentintentel2 uses the universal transverse mercator projection, which splites the world in 60 latitudinal zone. I elected to use EPSG:4326 as a standard crs across all systems to match the polygon data used in the redlining data
+```{r}
+  ndvi4birm <- ndvi.calc[[1]]
+  ndvi4indy <- ndvi.calc[[2]]
+  ndvi4minn <- ndvi.calc[[3]]
+  ndvi4phoe <- ndvi.calc[[4]]
+  ndvi4birmplot <- terra::project(x=ndvi4birm,"EPSG:4326")
+  ndvi4indyplot <- terra::project(x=ndvi4indy,"EPSG:4326")
+  ndvi4minnplot <- terra::project(x=ndvi4minn,"EPSG:4326")
+  ndvi4phoeplot <- terra::project(x=ndvi4phoe,"EPSG:4326")
+```
+
 
 ### Q5 (1 points)
 Overlay the projected vector file onto the projected NDVI for a single city using `tidyterra::geom_spatraster()` in addition to `geom_sf()`. Adjust the color scales and add a scale bar to approximate Fig. 2a of Schell et al. 2020. 
+```{r}
+library(RColorBrewer)
+balt <- ggplot()+
+  geom_spatraster(data=ndvi4baltplot)+
+    scale_fill_gradient2(low = "#fc8d59",
+                         mid = "#ffffbf",
+                       high = "#91cf60",
+                       na.value = "transparent")+
+    geom_sf(data=balt.sf, aes(color=grade), fill= NA, linewidth=0.75) +
+#was intially fill, would cover ndvi data
+    coord_sf(xlim = c(-76.800, -76.500), ylim =c(39.150,39.450))+
+      scale_color_brewer(palette="Set1",
+                     direction = -1)
+ 
+
+ 
+```
+
 
 ### Q6 (1 point)
 Repeat the above for all 5 cities and add the city name. Explore the `cowplot` or `patchwork` packages to create a multi-panel figure. 
+```{r}
+library(patchwork)
+
+
+ggplot()+
+  geom_spatraster(data=ndvi4baltplot)+
+    scale_fill_gradient2(low = "#fc8d59",
+                         mid = "#ffffbf",
+                       high = "#91cf60",
+                       na.value = "transparent")+
+    geom_sf(data=balt.sf, aes(color=grade), fill= NA, linewidth=0.75) +
+#was intially fill, would cover ndvi data
+    coord_sf(xlim = c(-76.800, -76.500), ylim =c(39.150,39.450))+
+      scale_color_brewer(palette="Set1",
+                     direction = -1)+
+  ggplot()+
+  geom_spatraster(data=ndvi4birmplot)+
+    scale_fill_gradient2(low = "#fc8d59",
+                         mid = "#ffffbf",
+                       high = "#91cf60",
+                       na.value = "transparent")+
+    geom_sf(data=birm.sf, aes(color=grade), fill= NA, linewidth=0.75) +
+    coord_sf(xlim = c(-86.95, -86.60), ylim =c(33.4, 33.70))+
+      scale_color_brewer(palette="Set1",
+                     direction = -1)+
+  ggplot()+
+  geom_spatraster(data=ndvi4indyplot)+
+    scale_fill_gradient2(low = "#fc8d59",
+                         mid = "#ffffbf",
+                       high = "#91cf60",
+                       na.value = "transparent")+
+    geom_sf(data=indy.sf, aes(color=grade), fill= NA, linewidth=0.75) +
+    coord_sf(xlim = c(-86.3887, -85.9385), ylim =c(39.67222222,39.95))+
+      scale_color_brewer(palette="Set1",
+                     direction = -1)+
+  ggplot()+
+  geom_spatraster(data=ndvi4minnplot)+
+    scale_fill_gradient2(low = "#fc8d59",
+                         mid = "#ffffbf",
+                       high = "#91cf60",
+                       na.value = "transparent")+
+    geom_sf(data=minn.sf, aes(color=grade), fill= NA, linewidth=0.75) +
+    coord_sf(xlim = c(-93.4, -93.17), ylim =c(44.9,45.05))+
+      scale_color_brewer(palette="Set1",
+                     direction = -1)+
+  ggplot()+
+  geom_spatraster(data=ndvi4phoeplot)+
+    scale_fill_gradient2(low = "#fc8d59",
+                         mid = "#ffffbf",
+                       high = "#91cf60",
+                       na.value = "transparent")+
+    geom_sf(data=phoe.sf, aes(color=grade), fill= NA, linewidth=0.75) +
+coord_sf(xlim = c(-112.15, -112.00), ylim =c(33.42, 33.50))+
+      scale_color_brewer(palette="Set1",
+                     direction = -1)
+  
+  
+```
+
 
 ### Q7 (2 points)
 Now, let's examine the relationship between redlining and NDVI. Temporarily re-read in your redlining polygons using `terra:::vect()`. You can use `terra:extract()` on these temporary polygons within `mutate()` on your original polygons read in with `read_sf()`. Because the output of `terra::extract()` is a data.frame, `dplyr::pull()` can be helpful. 
