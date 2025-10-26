@@ -63,7 +63,8 @@ library(RColorBrewer)
 geom_sf(aes(color=grade)) +
 #was intially fill, would cover ndvi data
   scale_color_brewer(palette="Set1",
-                     direction = -1)
+                     direction = -1,
+                     )
   
 ```
 
@@ -95,6 +96,22 @@ vis4balt <- rast("data/Baltimore/T18SUJ_20250603T155001_B04_10m copy.jp2")
 nir8balt <- rast("data/Baltimore/T18SUJ_20250603T155001_B08_10m copy.jp2")
 
 ndvi4balt <- (nir8balt - vis4balt)/(nir8balt+vis4balt)
+plot(ndvi4balt)
+ndvi4baltplot <- terra::project(x=ndvi4balt,"EPSG:4326")
+library(RColorBrewer)
+# plot1 <- 
+  ggplot()+
+  geom_spatraster(data=ndvi4baltplot)+
+    scale_fill_gradient2(low = "#fc8d59",
+                         mid = "#ffffbf",
+                       high = "#91cf60",
+                       na.value = "transparent")+
+    geom_sf(data=balt.sf, aes(color=grade), fill= NA, linewidth=0.75) +
+#was intially fill, would cover ndvi data
+    coord_sf(xlim = c(-76.800, -76.500), ylim =c(39.150,39.450))+
+      scale_color_brewer(palette="Set1",
+                     direction = -1)
+ 
 
 
 ```
@@ -112,7 +129,10 @@ jp2.clean <- jp2.files[str_ends(jp2.files, "_10m.jp2")]
 
   ndvi.calc <- list()
   vis.r <- list()
-  nir.r <- list()
+red.band <- NULL
+nir.band <- NULL
+red.name <- NULL
+nir.name <- NULL
   
 for (i in seq_along(jp2.clean)) {
   current_file <- jp2.clean[i]
@@ -132,15 +152,19 @@ nir.band <- rast(current_file)
     # Compute NDVI
     ndvi <- (nir.band - red.band) / (nir.band + red.band)
     
-    names(ndvi) <- paste0("NDVI_meta"))
-    ndvi$source_files <- paste(basename(red.name), basename(nir.name), sep = " + ")
+    names(ndvi) <- paste0("NDVI_meta")
   
     ndvi.calc[[length(ndvi.calc) + 1]] <- ndvi
     red.band <- nir.band <- NULL
     red.name <- nir.name <- NULL
-  }
+  }}
+  plot(ndvi.calc[[1]])
+  names(ndvi.calc[[1]])
   
-
+  names(ndvi.calc[[1]]) <- "Birmingham"
+  ndvi4birm <- ndvi.calc[[1]]
+  ndvi4
+  
   
   
   
