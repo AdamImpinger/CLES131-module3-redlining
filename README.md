@@ -1,7 +1,7 @@
 # Module 3: Redlining
 
 ## Team members and contributions
-To be updated
+Adam Akins — sage and spiritual guidance from Evan Wyers
 
 ## Learning objectives
 
