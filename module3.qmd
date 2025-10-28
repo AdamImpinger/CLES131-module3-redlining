@@ -322,40 +322,50 @@ phoe.vect <- terra:::vect("data/Phoenix/pho.geojson.json")
 Extract the mean, median, and central 95% quantile of NDVI from each delineated neighborhood while retaining the identity of the city. Perform your choice of at least two exploratory data visualizations utilizing different variables to evaluate this relationship and examine whether it differs between cities.
 
 ```{r}
+#how to do quantiles????
 analysis.balt <- balt.vect |> mutate(ndvi_mean = terra::extract(ndvi4baltplot, balt.vect,
 fun = mean, na.rm = TRUE, ID = FALSE) |>
-pull())
+pull()) |> 
+                                 mutate(ndvi_median = terra::extract(ndvi4baltplot, balt.vect,
+                                                                   fun = mean, na.rm = TRUE, ID = FALSE) |>
+  pull())
 view(analysis.balt)
+quantiles.balt <- terra::global(ndvi4baltplot, fun = function(x) quantile(x, probs = c(0.025, 0.975), na.rm = TRUE))
 
 analysis.birm <- birm.vect |>  mutate(ndvi_mean = terra::extract(ndvi4birmplot, birm.vect,
                                                                 fun = mean, na.rm = TRUE, ID = FALSE) |>
 pull()) |> 
                                mutate(ndvi_median = terra::extract(ndvi4birmplot, birm.vect,
                                                                    fun = mean, na.rm = TRUE, ID = FALSE) |>
-  pull()) |> 
-                              
+  pull())
+quantiles.birm <- terra::global(ndvi4birmplot, fun = function(x) quantile(x, probs = c(0.025, 0.975), na.rm = TRUE))
 view(analysis.birm)
+
 
 analysis.indy <- indy.vect |> mutate(ndvi_mean = terra::extract(ndvi4indyplot, indy.vect,
                                                                 fun = mean, na.rm = TRUE, ID = FALSE) |>
   pull()) |> 
                                      mutate(ndvi_median = terra::extract(ndvi4indyplot, indy.vect,
                                                                   fun = median, na.rm = TRUE, ID = FALSE) |> 
-  pull()) |> 
-                                     mutate(CI = terra::extract(ndvi4indyplot, indy.vect,
-                                                                fun = confint, na.rm = TRUE, ID = FALSE) |> 
- pull())
-view(analysis.indy)
+  pull()) 
+ quantiles.indy <- terra::global(ndvi4indyplot, fun = function(x) quantile(x, probs = c(0.025, 0.975), na.rm = TRUE))
 
 analysis.minn <- minn.vect |> mutate(ndvi_mean = terra::extract(ndvi4minnplot, minn.vect,
                                                                 fun = mean, na.rm = TRUE, ID = FALSE) |> 
+ pull()) |> 
+                               mutate(ndvi_median = terra::extract(ndvi4minn, minn.vect,
+                                                                  fun = median, na.rm = TRUE, ID = FALSE) |> 
   pull())
   view(analysis.minn)
+  quantiles.minn <- terra::global(ndvi4minnplot, fun = function(x) quantile(x, probs = c(0.025, 0.975), na.rm = TRUE))
   
-analysis.phoe <-  phoe.vect |> mutate(ndvi_mean=terra::extract(ndvi4phoeplot, phoe.vect,
+analysis.phoe <-  phoe.vect |> mutate(ndvi_mean = terra::extract(ndvi4phoeplot, phoe.vect,
                                                                fun = mean, na.rm = TRUE, ID = FALSE) |> 
-                                        
   pull())
+                                mutate(ndvi_median = terra::extract(ndvi4phoeplot, phoe.vect,
+                                                                  fun = median, na.rm = TRUE, ID = FALSE) |> 
+  pull())
+quantiles.phoe <- terra::global(ndvi4phoeplot, fun = function(x) quantile(x, probs = c(0.025, 0.975), na.rm = TRUE))
 view(analysis.phoe)
 ```
 
