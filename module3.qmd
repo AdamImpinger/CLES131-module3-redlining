@@ -16,8 +16,7 @@ library(tidyverse)
 
 ### Use of GitHub
 
-Link to your forked GH repository:
-git@github.com:AdamImpinger/CLES131-module3-redlining.git
+Link to your forked GH repository: git\@github.com:AdamImpinger/CLES131-module3-redlining.git
 
 ### Use of Quarto
 
@@ -35,16 +34,16 @@ We will use a vector dataset of redlining maps from [Mapping Inequality](https:/
 
 Click 'Explore the Maps' to look at some cities and neighborhoods you are familiar with. Who is the intended audience of this data science project, and how are the data used to communicate understanding, insight, and knowledge? Why is this effective?
 
-This data science project is aimed at the general public as a project of history. By presenting each neighborhood as they were classified by loan rating, we are able to understand factors that hindered development in cities and condemned zones as risky financial investments, limiting opportunities for families in those zones attempting to build generational wealth and equity in these zones and individuals attempting to bring commerce or housing developments into these zones. This representation provides explanation for enduring economic challenge in these redlined zones, and details the sentiment towards people groups. By including the primary source of descriptions and limits applied to each zone, the biases and aribitrary decision that economic potential was capped in these zones on the basis of race relates the governements direct action to limit economic growth and services availed to people within minortized groups.
-### Q2 (1 point)
+This data science project is aimed at the general public as a project of history. By presenting each neighborhood as they were classified by loan rating, we are able to understand factors that hindered development in cities and condemned zones as risky financial investments, limiting opportunities for families in those zones attempting to build generational wealth and equity in these zones and individuals attempting to bring commerce or housing developments into these zones. This representation provides explanation for enduring economic challenge in these redlined zones, and details the sentiment towards people groups. By including the primary source of descriptions and limits applied to each zone, the biases and aribitrary decision that economic potential was capped in these zones on the basis of race relates the governements direct action to limit economic growth and services availed to people within minortized groups. \### Q2 (1 point)
 
-Create a `data/` folder in the root of your project and create five subfolders labeled with the city names from Fig. 2 of Schell et al. 2020. Because the spatial files will be large, add `data/` to the .gitignore file. 
+Create a `data/` folder in the root of your project and create five subfolders labeled with the city names from Fig. 2 of Schell et al. 2020. Because the spatial files will be large, add `data/` to the .gitignore file.
 
-Then, go back to the home page of [Mapping Inequality](https://dsl.richmond.edu/panorama/redlining) and select 'Download the Data'. Use the search bar to select and download spatial data for each city. Move the geojson file into the associated data subfolder. 
+Then, go back to the home page of [Mapping Inequality](https://dsl.richmond.edu/panorama/redlining) and select 'Download the Data'. Use the search bar to select and download spatial data for each city. Move the geojson file into the associated data subfolder.
 
-Import the geojson file into your R environment with the `st_read`()` function from sf. Check the structure of this object and see that it is a special type of data frame, allowing it to be manipulated with many of the functions you already know, including ggplot. 
+Import the geojson file into your R environment with the `st_read`()\` function from sf. Check the structure of this object and see that it is a special type of data frame, allowing it to be manipulated with many of the functions you already know, including ggplot.
 
-Make a quick plot of your first city showing the "grade" in color using ggplot syntax and `geom_sf()`. Select a color scheme that better comports with redlining. 
+Make a quick plot of your first city showing the "grade" in color using ggplot syntax and `geom_sf()`. Select a color scheme that better comports with redlining.
+
 ```{r}
 data.path.balt <- "data/Baltimore/balt.geojson.json"
 balt.sf <- st_read(data.path.balt)
@@ -68,29 +67,26 @@ geom_sf(aes(color=grade)) +
   
 ```
 
-
 ## The raster data
 
 We will also be calculating NDVI from the European Space Agency's [Sentinel-2 Mission](https://documentation.dataspace.copernicus.eu/Data/SentinelMissions/Sentinel2.html), specifically bands B4 (red) and B8 (near infrared). There are multiple steps to importing the data, which itself takes a long time, so please get an early start.
 
- - Click "Explore Sentinel-2 data" on this [page](https://dataspace.copernicus.eu/data-collections/copernicus-sentinel-data/sentinel-2) and create an account to login
- - In the explorer, make sure Sentinel-2 L2A is selected (Level 2A, atmospheric correction applied)
- - Scroll and zoom to the city of choice
- - Use the polygon tool (upper right corner, hover over pentagon icon and select rectangle) to draw a bounding box. Adjust until the extent approximates those in Schell et al. 2020. Try selecting the "False color" layer to help diagnose features to include or exclude
- - Set a threshold for cloud cover and select a date that reasonably approximates peak greenness. You may have to test multiple options to locate it, and not all cities will have the same date
- - Once the displayed images looks satisfactory, click "Find products for current view"
- - Check the desired product and download. It will take a while because the files are large
- 
-The data will be packaged as a zipped SAFE file in your Downloads folder. You may need to investigate the properties of the file and click 'unblock' to give permission to open. Once unzipped, you will find:
- - The images are jpeg2000 files nested within the GRANULE and IMG_DATA subfolders
- - Multiple resolutions and bands are available
- - Metadata is provided in `MTD_MSIL2A.xml`
+-   Click "Explore Sentinel-2 data" on this [page](https://dataspace.copernicus.eu/data-collections/copernicus-sentinel-data/sentinel-2) and create an account to login
+-   In the explorer, make sure Sentinel-2 L2A is selected (Level 2A, atmospheric correction applied)
+-   Scroll and zoom to the city of choice
+-   Use the polygon tool (upper right corner, hover over pentagon icon and select rectangle) to draw a bounding box. Adjust until the extent approximates those in Schell et al. 2020. Try selecting the "False color" layer to help diagnose features to include or exclude
+-   Set a threshold for cloud cover and select a date that reasonably approximates peak greenness. You may have to test multiple options to locate it, and not all cities will have the same date
+-   Once the displayed images looks satisfactory, click "Find products for current view"
+-   Check the desired product and download. It will take a while because the files are large
 
-For each city, locate the 10m resolution files for the B04 and B08 bands along with associated metadata and copy them to `data/city_name/` within this project. 
+The data will be packaged as a zipped SAFE file in your Downloads folder. You may need to investigate the properties of the file and click 'unblock' to give permission to open. Once unzipped, you will find: - The images are jpeg2000 files nested within the GRANULE and IMG_DATA subfolders - Multiple resolutions and bands are available - Metadata is provided in `MTD_MSIL2A.xml`
+
+For each city, locate the 10m resolution files for the B04 and B08 bands along with associated metadata and copy them to `data/city_name/` within this project.
 
 ### Q3 (1 point)
-Use the terra package and the `rast()` function to import the two bands, which are reported as digital numbers. 
-Combine to calculate NDVI ($ (NIR - R) / (NIR + R)$) and display a quick plot of your first city. 
+
+Use the terra package and the `rast()` function to import the two bands, which are reported as digital numbers. Combine to calculate NDVI (\$ (NIR - R) / (NIR + R)\$) and display a quick plot of your first city.
+
 ```{r}
 vis4balt <- rast("data/Baltimore/T18SUJ_20250603T155001_B04_10m copy.jp2")
 nir8balt <- rast("data/Baltimore/T18SUJ_20250603T155001_B08_10m copy.jp2")
@@ -116,9 +112,10 @@ library(RColorBrewer)
 
 ```
 
-
 ### Bonus 1 (1 point)
-Since you have 5 cities to plot, can you optimize the same operations as Q3 with a for loop? 
+
+Since you have 5 cities to plot, can you optimize the same operations as Q3 with a for loop?
+
 ```{r}
 # . indicates the use of the current set working directory, pattern establishes the file form while recursive command causes cycling through all sub files
 library(tidyverse)
@@ -194,16 +191,19 @@ minn.sf <- st_read("data/Minneapolis/minn.geojson.json")
 phoe.sf <- st_read("data/Phoenix/pho.geojson.json")
 
 
-  
-  
-  
+birm.sf <- birm.sf|> rename(Redlining_Grade=grade)
+indy.sf <- indy.sf|> rename(Redlining_Grade=grade)
+minn.sf <- minn.sf|> rename(Redlining_Grade=grade)
+phoe.sf <- phoe.sf|> rename(Redlining_Grade=grade)
+
 
 
 ```
 
 ### Q4 (1 point)
-Do the rasters and polygons share the same coordinate reference system? If not, project both into the same CRS and justify your choice. 
-No these were not in compatible, and resulted in skewed projections that were not aligned, as the crs had a variety of different crs used throughout the different latitudes, as the sentintentel2 uses the universal transverse mercator projection, which splites the world in 60 latitudinal zone. I elected to use EPSG:4326 as a standard crs across all systems to match the polygon data used in the redlining data
+
+Do the rasters and polygons share the same coordinate reference system? If not, project both into the same CRS and justify your choice. No these were not in compatible, and resulted in skewed projections that were not aligned, as the crs had a variety of different crs used throughout the different latitudes, as the sentintentel2 uses the universal transverse mercator projection, which splites the world in 60 latitudinal zone. I elected to use EPSG:4326 as a standard crs across all systems to match the polygon data used in the redlining data
+
 ```{r}
   ndvi4birm <- ndvi.calc[[1]]
   ndvi4indy <- ndvi.calc[[2]]
@@ -215,9 +215,10 @@ No these were not in compatible, and resulted in skewed projections that were no
   ndvi4phoeplot <- terra::project(x=ndvi4phoe,"EPSG:4326")
 ```
 
-
 ### Q5 (1 points)
-Overlay the projected vector file onto the projected NDVI for a single city using `tidyterra::geom_spatraster()` in addition to `geom_sf()`. Adjust the color scales and add a scale bar to approximate Fig. 2a of Schell et al. 2020. 
+
+Overlay the projected vector file onto the projected NDVI for a single city using `tidyterra::geom_spatraster()` in addition to `geom_sf()`. Adjust the color scales and add a scale bar to approximate Fig. 2a of Schell et al. 2020.
+
 ```{r}
 library(RColorBrewer)
 balt <- ggplot()+
@@ -225,20 +226,24 @@ balt <- ggplot()+
     scale_fill_gradient2(low = "#fc8d59",
                          mid = "#ffffbf",
                        high = "#91cf60",
-                       na.value = "transparent")+
-    geom_sf(data=balt.sf, aes(color=grade), fill= NA, linewidth=0.75) +
-#was intially fill, would cover ndvi data
+                       na.value = "transparent",
+                       name = "NDVI")+
+    geom_sf(data=balt.sf, aes(color=Redlining_Grade), fill= NA, linewidth=0.75) +
     coord_sf(xlim = c(-76.800, -76.500), ylim =c(39.150,39.450))+
       scale_color_brewer(palette="Set1",
-                     direction = -1)
+                     direction = -1,
+                     )
  
-
+                      balt
+ 
+#balt.sf <- balt.sf |> rename(Redlining_Grade=grade)
  
 ```
 
-
 ### Q6 (1 point)
-Repeat the above for all 5 cities and add the city name. Explore the `cowplot` or `patchwork` packages to create a multi-panel figure. 
+
+Repeat the above for all 5 cities and add the city name. Explore the `cowplot` or `patchwork` packages to create a multi-panel figure.
+
 ```{r}
 library(patchwork)
 
@@ -248,9 +253,9 @@ ggplot()+
     scale_fill_gradient2(low = "#fc8d59",
                          mid = "#ffffbf",
                        high = "#91cf60",
-                       na.value = "transparent")+
-    geom_sf(data=balt.sf, aes(color=grade), fill= NA, linewidth=0.75) +
-#was intially fill, would cover ndvi data
+                       na.value = "transparent",
+                       name = "NDVI")+
+    geom_sf(data=balt.sf, aes(color=Redlining_Grade), fill= NA, linewidth=0.75) +
     coord_sf(xlim = c(-76.800, -76.500), ylim =c(39.150,39.450))+
       scale_color_brewer(palette="Set1",
                      direction = -1)+
@@ -259,9 +264,10 @@ ggplot()+
     scale_fill_gradient2(low = "#fc8d59",
                          mid = "#ffffbf",
                        high = "#91cf60",
-                       na.value = "transparent")+
-    geom_sf(data=birm.sf, aes(color=grade), fill= NA, linewidth=0.75) +
-    coord_sf(xlim = c(-86.95, -86.60), ylim =c(33.4, 33.70))+
+                       na.value = "transparent",
+                       name = "NDVI")+
+    geom_sf(data=birm.sf, aes(color=Redlining_Grade), fill= NA, linewidth=0.75) +
+    coord_sf(xlim = c(-86.95, -86.68), ylim =c(33.4, 33.64))+
       scale_color_brewer(palette="Set1",
                      direction = -1)+
   ggplot()+
@@ -269,9 +275,10 @@ ggplot()+
     scale_fill_gradient2(low = "#fc8d59",
                          mid = "#ffffbf",
                        high = "#91cf60",
-                       na.value = "transparent")+
-    geom_sf(data=indy.sf, aes(color=grade), fill= NA, linewidth=0.75) +
-    coord_sf(xlim = c(-86.3887, -85.9385), ylim =c(39.67222222,39.95))+
+                       na.value = "transparent",
+                       name = "NDVI")+
+    geom_sf(data=indy.sf, aes(color=Redlining_Grade), fill= NA, linewidth=0.75) +
+    coord_sf(xlim = c(-86.357, -86), ylim =c(39.67222222,39.95))+
       scale_color_brewer(palette="Set1",
                      direction = -1)+
   ggplot()+
@@ -279,8 +286,9 @@ ggplot()+
     scale_fill_gradient2(low = "#fc8d59",
                          mid = "#ffffbf",
                        high = "#91cf60",
-                       na.value = "transparent")+
-    geom_sf(data=minn.sf, aes(color=grade), fill= NA, linewidth=0.75) +
+                       na.value = "transparent",
+                       name = "NDVI")+
+    geom_sf(data=minn.sf, aes(color=Redlining_Grade), fill= NA, linewidth=0.75) +
     coord_sf(xlim = c(-93.4, -93.17), ylim =c(44.9,45.05))+
       scale_color_brewer(palette="Set1",
                      direction = -1)+
@@ -289,8 +297,9 @@ ggplot()+
     scale_fill_gradient2(low = "#fc8d59",
                          mid = "#ffffbf",
                        high = "#91cf60",
-                       na.value = "transparent")+
-    geom_sf(data=phoe.sf, aes(color=grade), fill= NA, linewidth=0.75) +
+                       na.value = "transparent",
+                       name = "NDVI")+
+    geom_sf(data=phoe.sf, aes(color=Redlining_Grade), fill= NA, linewidth=0.75) +
 coord_sf(xlim = c(-112.15, -112.00), ylim =c(33.42, 33.50))+
       scale_color_brewer(palette="Set1",
                      direction = -1)
@@ -298,18 +307,55 @@ coord_sf(xlim = c(-112.15, -112.00), ylim =c(33.42, 33.50))+
   
 ```
 
-
 ### Q7 (2 points)
-Now, let's examine the relationship between redlining and NDVI. Temporarily re-read in your redlining polygons using `terra:::vect()`. You can use `terra:extract()` on these temporary polygons within `mutate()` on your original polygons read in with `read_sf()`. Because the output of `terra::extract()` is a data.frame, `dplyr::pull()` can be helpful. 
 
-Extract the mean, median, and central 95% quantile of NDVI from each delineated neighborhood while retaining the identity of the city. Perform your choice of at least two exploratory data visualizations utilizing different variables to evaluate this relationship and examine whether it differs between cities. 
+Now, let's examine the relationship between redlining and NDVI. Temporarily re-read in your redlining polygons using `terra:::vect()`. You can use `terra:extract()` on these temporary polygons within `mutate()` on your original polygons read in with `read_sf()`. Because the output of `terra::extract()` is a data.frame, `dplyr::pull()` can be helpful.
+
+```{r}
+balt.vect <- terra::vect("data/Baltimore/balt.geojson.json")
+birm.vect<- terra:::vect("data/Birmingham/birm.geojson.json")
+indy.vect <- terra:::vect("data/Indianapolis/indy.geojson.json")
+minn.vect <- terra:::vect("data/Minneapolis/minn.geojson.json")
+phoe.vect <- terra:::vect("data/Phoenix/pho.geojson.json")
+```
+
+Extract the mean, median, and central 95% quantile of NDVI from each delineated neighborhood while retaining the identity of the city. Perform your choice of at least two exploratory data visualizations utilizing different variables to evaluate this relationship and examine whether it differs between cities.
+
+```{r}
+analysis.balt <- balt.vect |> mutate(ndvi_mean = terra::extract(ndvi4baltplot, balt.vect,
+fun = mean, na.rm = TRUE, ID = FALSE) |>
+pull())
+view(analysis.balt)
+
+analysis.birm <- birm.vect |>  mutate(ndvi_mean = terra::extract(ndvi4birmplot, birm.vect,
+fun = mean, na.rm = TRUE, ID = FALSE) |>
+pull())
+view(analysis.birm)
+
+analysis.indy <- indy.vect |> mutate(ndvi_mean = terra::extract(ndvi4indyplot, indy.vect,
+                                                                fun = mean, na.rm = TRUE, ID = FALSE) |>
+pull())
+view(analysis.indy)
+
+analysis.minn <- minn.vect |> mutate(ndvi_mean = terra::extract(ndvi4minnplot, minn.vect,
+                                                                fun = mean, na.rm = TRUE, ID = FALSE) |> 
+  pull())
+  view(analysis.minn)
+  
+analysis.phoe <-  phoe.vect |> mutate(ndvi_mean=terra::extract(ndvi4phoeplot, phoe.vect,
+                                                               fun = mean, na.rm = TRUE, ID = FALSE) |> 
+  pull())
+view(analysis.phoe)
+```
 
 ### Bonus 2 (1 point)
-Perform a statistical test to support your visual analysis above. 
+
+Perform a statistical test to support your visual analysis above.
 
 ### Q8 (2 points)
-Create a final plot and describe whether NDVI is associated with historical redlining. Does this pattern differ between the five cities examined here? If so, how? 
+
+Create a final plot and describe whether NDVI is associated with historical redlining. Does this pattern differ between the five cities examined here? If so, how?
 
 ### Bonus 3 (1 point)
-Include the results of your statistical test in the final plot and use prose to incorporate statistical output in the context of the question above. 
 
+Include the results of your statistical test in the final plot and use prose to incorporate statistical output in the context of the question above.
