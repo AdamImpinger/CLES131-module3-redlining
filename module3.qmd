@@ -328,13 +328,23 @@ pull())
 view(analysis.balt)
 
 analysis.birm <- birm.vect |>  mutate(ndvi_mean = terra::extract(ndvi4birmplot, birm.vect,
-fun = mean, na.rm = TRUE, ID = FALSE) |>
-pull())
+                                                                fun = mean, na.rm = TRUE, ID = FALSE) |>
+pull()) |> 
+                               mutate(ndvi_median = terra::extract(ndvi4birmplot, birm.vect,
+                                                                   fun = mean, na.rm = TRUE, ID = FALSE) |>
+  pull()) |> 
+                              
 view(analysis.birm)
 
 analysis.indy <- indy.vect |> mutate(ndvi_mean = terra::extract(ndvi4indyplot, indy.vect,
                                                                 fun = mean, na.rm = TRUE, ID = FALSE) |>
-pull())
+  pull()) |> 
+                                     mutate(ndvi_median = terra::extract(ndvi4indyplot, indy.vect,
+                                                                  fun = median, na.rm = TRUE, ID = FALSE) |> 
+  pull()) |> 
+                                     mutate(CI = terra::extract(ndvi4indyplot, indy.vect,
+                                                                fun = confint, na.rm = TRUE, ID = FALSE) |> 
+ pull())
 view(analysis.indy)
 
 analysis.minn <- minn.vect |> mutate(ndvi_mean = terra::extract(ndvi4minnplot, minn.vect,
@@ -344,6 +354,7 @@ analysis.minn <- minn.vect |> mutate(ndvi_mean = terra::extract(ndvi4minnplot, m
   
 analysis.phoe <-  phoe.vect |> mutate(ndvi_mean=terra::extract(ndvi4phoeplot, phoe.vect,
                                                                fun = mean, na.rm = TRUE, ID = FALSE) |> 
+                                        
   pull())
 view(analysis.phoe)
 ```
