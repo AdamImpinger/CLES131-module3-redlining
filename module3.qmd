@@ -10,8 +10,10 @@ editor_options:
 #| warning: false
 library(sf) # simple features for R
 library(terra) # spatial data analysis
-library(tidyterra) #tidyverse methods for terra objects
+library(tidyterra)
+library(ggplot2)
 library(tidyverse)
+
 ```
 
 ### Use of GitHub
@@ -20,7 +22,7 @@ Link to your forked GH repository: git\@github.com:AdamImpinger/CLES131-module3-
 
 ### Use of Quarto
 
-Link to your .qmd file:
+Link to your .qmd file: <https://github.com/AdamImpinger/CLES131-module3-redlining/blob/bc23494d2ab84c50f9d034b142177d40a335c878/module3.qmd>
 
 # Ecological consequences of redlining
 
@@ -47,11 +49,6 @@ Make a quick plot of your first city showing the "grade" in color using ggplot s
 ```{r}
 data.path.balt <- "data/Baltimore/balt.geojson.json"
 balt.sf <- st_read(data.path.balt)
-balt.sf.firstclean <- balt.sf |>
-  mutate(grade = case_when(
-         grade %in% c("A", "A ") ~ "A",
-         grade %in% c("C", "C ") ~ "C",
-         TRUE ~ grade))
 #we use this for my lab, thought it would be helpful here
 
 #data aes
@@ -176,21 +173,21 @@ nir.band <- rast(current_file)
 json.df <- as.data.frame(json.files)
 
 #lost missions, left for historical reccord of effort
-as.vector(json.read)
-plot.json<- as.data.frame(json.read)
-for (i in seq_along(json.files)){
-  current_file <- json.files[i]
-  file_name <- st_read(current_file)
-  plot.json <- cbind(file_name)
-  file_name <- NULL
-}
+#as.vector(json.read)
+#plot.json<- as.data.frame(json.read)
+#for (i in seq_along(json.files)){
+#  current_file <- json.files[i]
+ # file_name <- st_read(current_file)
+#  plot.json <- cbind(file_name)
+#  file_name <- NULL
+#}
 
 birm.sf<- st_read("data/Birmingham/birm.geojson.json")
 indy.sf <- st_read("data/Indianapolis/indy.geojson.json")
 minn.sf <- st_read("data/Minneapolis/minn.geojson.json")
 phoe.sf <- st_read("data/Phoenix/pho.geojson.json")
 
-
+balt.sf <- balt.sf|> rename(Redlining_Grade=grade)
 birm.sf <- birm.sf|> rename(Redlining_Grade=grade)
 indy.sf <- indy.sf|> rename(Redlining_Grade=grade)
 minn.sf <- minn.sf|> rename(Redlining_Grade=grade)
@@ -322,7 +319,7 @@ phoe.vect <- terra:::vect("data/Phoenix/pho.geojson.json")
 Extract the mean, median, and central 95% quantile of NDVI from each delineated neighborhood while retaining the identity of the city. Perform your choice of at least two exploratory data visualizations utilizing different variables to evaluate this relationship and examine whether it differs between cities.
 
 ```{r}
-#how to do quantiles????
+
 analysis.balt <- balt.vect |> mutate(ndvi_mean = terra::extract(ndvi4baltplot, balt.vect,
 fun = mean, na.rm = TRUE, ID = FALSE) |>
 pull()) |> 
@@ -345,15 +342,16 @@ view(analysis.birm)
 analysis.indy <- indy.vect |> mutate(ndvi_mean = terra::extract(ndvi4indyplot, indy.vect,
                                                                 fun = mean, na.rm = TRUE, ID = FALSE) |>
   pull()) |> 
-                                     mutate(ndvi_median = terra::extract(ndvi4indyplot, indy.vect,
+                              mutate(ndvi_median = terra::extract(ndvi4indyplot, indy.vect,
                                                                   fun = median, na.rm = TRUE, ID = FALSE) |> 
   pull()) 
+
  quantiles.indy <- terra::global(ndvi4indyplot, fun = function(x) quantile(x, probs = c(0.025, 0.975), na.rm = TRUE))
 
 analysis.minn <- minn.vect |> mutate(ndvi_mean = terra::extract(ndvi4minnplot, minn.vect,
                                                                 fun = mean, na.rm = TRUE, ID = FALSE) |> 
  pull()) |> 
-                               mutate(ndvi_median = terra::extract(ndvi4minn, minn.vect,
+                               mutate(ndvi_median = terra::extract(ndvi4minnplot, minn.vect,
                                                                   fun = median, na.rm = TRUE, ID = FALSE) |> 
   pull())
   view(analysis.minn)
@@ -361,22 +359,174 @@ analysis.minn <- minn.vect |> mutate(ndvi_mean = terra::extract(ndvi4minnplot, m
   
 analysis.phoe <-  phoe.vect |> mutate(ndvi_mean = terra::extract(ndvi4phoeplot, phoe.vect,
                                                                fun = mean, na.rm = TRUE, ID = FALSE) |> 
-  pull())
+  pull()) |> 
                                 mutate(ndvi_median = terra::extract(ndvi4phoeplot, phoe.vect,
-                                                                  fun = median, na.rm = TRUE, ID = FALSE) |> 
+                                                                  fun = median, na.rm = TRUE, ID = FALSE) |>  
   pull())
 quantiles.phoe <- terra::global(ndvi4phoeplot, fun = function(x) quantile(x, probs = c(0.025, 0.975), na.rm = TRUE))
 view(analysis.phoe)
+
+
+#geom_hex exploration 
+balt.small <- analysis.balt |> 
+select(ndvi_mean, ndvi_median, grade)
+
+balt.small.plot <- as.data.frame(balt.small)
+  
+  
+indy.small <-  analysis.indy |> 
+select(ndvi_mean, ndvi_median, grade)
+indy.small.plot <- as.data.frame(indy.small)
+
+minn.small <- analysis.minn |> 
+select(ndvi_mean, ndvi_median, grade)
+minn.small.plot <- as.data.frame(minn.small)
+
+phoe.small <- analysis.phoe |> 
+select(ndvi_mean, ndvi_median, grade)
+phoe.small <- as.data.frame(phoe.small)
+phoe.small.plot <- as.data.frame.array(phoe.small)
+#phoenix was giving me a lot of trouble, super confused as to why, can view analysis phoe as a data frame but selecting data 
+
+birm.small <- analysis.birm |> 
+select(ndvi_mean, ndvi_median, grade)
+
+
+birm.small.plot <- as.data.frame(birm.small)
+view(birm.small.plot
+     )
+
+library(patchwork)
+birm.small.plot
+ggplot(data= birm.small.plot, mapping = aes(x=grade, y=ndvi_mean)) +
+  geom_point() +
+  geom_smooth()+
+  stat_summary(fun = mean, geom = "point", color = "steelblue", size = 3)+
+  xlab("Redlining grade") + 
+  ylab("Mean NDVI concentration") +
+  geom_smooth() +
+  ggtitle("Mean NDVI concentrationa in Birmingham in realtion to historic redlining")+
+  theme_minimal()+
+ggplot(data= balt.small.plot, mapping = aes(x=grade, y=ndvi_mean)) +
+  geom_point() +
+  geom_smooth()+
+  stat_summary(fun = mean, geom = "point", color = "steelblue", size = 3)+
+  xlab("Redlining grade") + 
+  ylab("Mean NDVI concentration") +
+  geom_smooth() +
+  ggtitle("Mean NDVI concentration in Baltimore in realtion to historic redlining")+
+  theme_minimal() +
+ggplot(data= indy.small.plot, mapping = aes(x=grade, y=ndvi_mean)) +
+  geom_point() +
+  geom_smooth()+
+  stat_summary(fun = mean, geom = "point", color = "steelblue", size = 3)+
+  xlab("Redlining grade") + 
+  ylab("Mean NDVI concentration") +
+  geom_smooth() +
+  ggtitle("Mean NDVI concentration in Indianapolis in realtion to historic redlining")+
+  theme_minimal()+
+ggplot(data= minn.small.plot, mapping = aes(x=grade, y=ndvi_mean)) +
+  geom_point() +
+  geom_smooth()+
+  stat_summary(fun = mean, geom = "point", color = "steelblue", size = 2)+
+  xlab("Redlining grade") + 
+  ylab("Mean NDVI concentration") +
+  geom_smooth() +
+  ggtitle("Mean NDVI concentration in Minneapolis in realtion to historic redlining")+
+  theme_minimal()+
+ggplot(data= phoe.small, mapping = aes(x=grade, y=ndvi_mean)) +
+  geom_point() +
+  geom_smooth()+
+  stat_summary(fun = mean, geom = "point", color = "steelblue", size = 2)+
+  xlab("Redlining grade") + 
+  ylab("Mean NDVI concentration") +
+  geom_smooth() +
+  ggtitle("Mean NDVI concentration in Phoenix in realtion to historic redlining")+
+  theme_minimal()
+
+cross.city.comp <- Reduce(function(grade, ndvi_mean) merge(grade, ndvi_mean, all=TRUE), list(phoe.small.plot, minn.small.plot, balt.small.plot, birm.small.plot, indy.small.plot))
+quantiles.cross.city <-global(ndvi4phoeplot, fun = function(x) quantile(x, probs = c(0.025, 0.975), na.rm = TRUE)) 
+
+all.cities.trends<- ggplot(data=cross.city.comp, mapping = aes(x=grade, y=ndvi_mean))+
+  geom_linerange(
+    
+    aes(ymin = quantiles.cross.city[[1]], ymax =quantiles.cross.city[[2]] ),
+    color = "steelblue"
+  ) +
+  geom_line(linewidth = 0.7,
+    color = "coral"
+  )+
+    xlab("Redlining grade") + 
+  ylab("Mean NDVI concentration") +
+  ggtitle("cross city comparison with data outside of 95% quantile reprsented in steelblue")
+all.cities.trends
+
+  
+ full.quantiles <- rbind(quantiles.balt+quantiles.birm+quantiles.indy+quantiles.birm+quantiles.minn+quantiles.phoe)
+ 
+
+
 ```
 
 ### Bonus 2 (1 point)
 
 Perform a statistical test to support your visual analysis above.
 
+```{r}
+# with a continuous data (ndvi) and a categorical (Redlining grades) anova is the most appropriate test
+library(rstatix)
+#install.packages("ggpubr")
+library(ggpubr)
+library(tidyverse)
+city.by.city <- bind_rows(list(
+  balt=balt.small.plot,
+  birm=birm.small.plot,
+  indy=indy.small.plot,
+  minn=minn.small.plot,
+  phoe=phoe.small.plot),
+  .id= "city"
+)
+
+model.real <- lm(ndvi_mean~grade, data = city.by.city)
+anova.allcities <- anova(model.real)
+print(model.real
+      )
+
+
+```
+
+Around 18% of total variation is explained by the effect that redline grading has on ndvi, with a pvalue of 0.00000000000009977, meaning that their is high evidence that grade has a statitiscally significant effect on NDVI
+
 ### Q8 (2 points)
 
 Create a final plot and describe whether NDVI is associated with historical redlining. Does this pattern differ between the five cities examined here? If so, how?
 
+```{r}
+#how to do quantiles???? arrived on just performing quantiles for the whole city, unsure if this is correct
+
+#dply flow to map everything on one chart, comparing!
+
+cross.city.histo<- ggplot(city.by.city, aes(x = ndvi_mean, fill = grade)) +
+  geom_histogram(alpha = 0.6, position = "identity", bins = 30) +
+  facet_wrap(~ city, scales = "free_y") +
+  theme_minimal() +
+  labs(
+    title = "NDVI Mean Distribution by Grade and City",
+    x = "NDVI Mean",
+    y = "Frequency",
+    fill = "Grade"
+)
+cross.city.histo
+
+```
+
+indinaapolis and phoenix have the highest frequency of correlation, with phoenix having the heaviest concentration of low graded locations wiht low NDVI. In Baltmore, the distinction between grades b and a are not extremelly diffrentiated while Bimringham exhbits a realitvely high number of high mean ndvi zones that were historically redlined.
+
 ### Bonus 3 (1 point)
 
 Include the results of your statistical test in the final plot and use prose to incorporate statistical output in the context of the question above.
+
+```{r}
+
+
+```
